@@ -1,0 +1,61 @@
+$N: 20;
+$COLOR: green;
+$WIDTH: 500px;
+$HEIGHT: 500px;
+
+@function W1x($x, $y){ @return 0.836 * $x + 0.044 * $y;}
+@function W2x($x, $y){ @return -0.141 * $x + 0.302 * $y;}
+@function W3x($x, $y){ @return 0.141 * $x - 0.302 * $y;}
+@function W4x($x, $y){ @return 0;}
+
+@function W1y($x, $y){ @return -0.044 * $x + 0.836 * $y + 0.169;}
+@function W2y($x, $y){ @return 0.302 * $x + 0.141 * $y + 0.127;}
+@function W3y($x, $y){ @return 0.302 * $x + 0.141 * $y + 0.169;}
+@function W4y($x, $y){ @return 0.175337 * $y;}
+
+
+@function f($k, $x, $y, $box-shadow:""){
+	@if $k > 0 {
+		$box-shadow: f($k - 1, W1x($x, $y), W1y($x, $y), $box-shadow);
+		
+		$flag: #{random(10) <= 3};
+		@if $flag == "true" {
+			$box-shadow: f($k - 1, W2x($x, $y), W2y($x, $y), $box-shadow);
+		}
+		
+		$flag: #{random(10) <= 3};
+		@if $flag == "true" {
+			$box-shadow: f($k - 1, W3x($x, $y), W3y($x, $y), $box-shadow);
+		}
+		
+		$flag: #{random(10) <= 3};
+		@if $flag == "true" {
+			$box-shadow: f($k - 1, W4x($x, $y), W4y($x, $y), $box-shadow);
+		}
+		
+		@return $box-shadow;
+	} @else {
+		$s: 490;
+		$x: $x * $s + $WIDTH * 0.5;
+		$y: $HEIGHT - $y * $s;
+		@if $box-shadow != "" {
+			$box-shadow: $box-shadow + ",";
+		}
+		@return $box-shadow + $x + " " + $y + " 0 0 " + $COLOR;
+	}
+}
+
+
+.fern{
+	width: $WIDTH;
+	height: $HEIGHT;
+}
+
+.fern:after{
+	content: "";
+	display: block;
+	width: 1px;
+	height: 1px;
+	background: rgba(255, 255, 255, 0);
+	box-shadow: unquote(f($N, 0, 0));
+}
